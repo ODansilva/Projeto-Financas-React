@@ -1,0 +1,36 @@
+.consulta {
+    max-width: 600px;
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+.consulta table{
+    width: 500px;
+    height: 150px;
+    border-collapse: collapse;
+}
+.consulta td{
+    text-align: center;
+}
+.consulta thead{
+    height: 40px;
+    background: #ff9f12;
+}
+.consulta tbody td{
+    background: #ff9f12;
+    border-top: 1px solid #fff;
+}
+.btn-remove {
+    border: 0;
+    width: 40px;
+    height: 40px;
+    background: #ff9f12;
+    cursor: pointer;
+}
+
+@media screen and (max-width: 700px) {
+    .consulta table{
+        width: 400px;
+        height: 100px;
+    }
+}
