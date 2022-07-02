@@ -1,11 +1,20 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-export const despesaSlice = createSlice({
+import fireStore from '../../services/firebaseconnect';
+import { collection, deleteDoc, doc, getDocs, query, where } from 'firebase/firestore';
+
+export const despesas = createSlice({
     name: 'despesas',
-    initialState: [],
+    initialState: {
+        despesa: [],
+        request: false,
+    },
     reducers: {
-        setDispesa(state, {payload}){
-            return {state, despesa: payload};
+        setDespesa(state, {payload}){
+            return {...state, despesa: payload, request: true};
+        },
+        getDespesa(state){
+            return state
         },
         updateDespesa(state, {payload}){
             const IsDespesa = (state.despesa === payload)
@@ -14,12 +23,63 @@ export const despesaSlice = createSlice({
             };
             state.push(payload)
         },
-
     }
 })
 
-
-export const { setDispesa } = despesaSlice.actions;
+export const { setDespesa, getDespesa } = despesas.actions;
 export const UseDespesas = state => state.despesas;
-export default despesaSlice.reducer;
+export default despesas.reducer;
+
+export function getDespesas(){
+    return async function (dispatch){
+        await getDocs(collection(fireStore, 'despesas'))
+        .then((snapshot)=>{
+            let lista = []
+            snapshot.forEach((doc)=>{
+                lista.push({
+                id: doc.id,
+                ano: doc.data().ano,
+                mes: doc.data().mes,
+                dia: doc.data().dia,
+                tipo: doc.data().tipo,
+                descricao: doc.data().descricao,
+                valor: doc.data().valor
+                })
+            })
+            dispatch(setDespesa(lista))
+        })
+    }
+}
+
+export function filtrarDespesa(param, searc){
+    return async function (dispatch){
+        const q = query(collection(fireStore, 'despesas'), where(`${param}`, '==', `${searc}`))
+        const despesa = await getDocs(q)
+        let lista = []
+        despesa.forEach((doc) => {
+            lista.push ({
+            id: doc.id,
+            ano: doc.data().ano,
+            mes: doc.data().mes,
+            dia: doc.data().dia,
+            tipo: doc.data().tipo,
+            descricao: doc.data().descricao,
+            valor: doc.data().valor
+            })
+        })
+        dispatch(setDespesa([...lista]))
+    }
+}
+
+export function deleteDespesa(id){
+    return async function (dispatch){
+        await deleteDoc(doc(fireStore, 'despesas', `${id}`))
+        .then(()=>{
+            dispatch(getDespesas())
+        })
+    }
+}
+
+
+    
 

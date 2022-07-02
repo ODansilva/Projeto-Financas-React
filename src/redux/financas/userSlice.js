@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth'
 
-import { doc, getDoc, setDoc } from 'firebase/firestore'
 import fireStore from '../../services/firebaseconnect'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth'
 
 export const users = createSlice({
     name: 'user',
@@ -12,18 +12,16 @@ export const users = createSlice({
     },
     reducers: {
         changeUser(state, { payload }){
-            return { ...state, signed: true, user: payload}
+            return {...state, signed: true, user: payload}
         },
         logoutUser(state){
-            return { ...state, signed: false, user: ''}
+            return {...state, signed: false, user: ''}
         }
     },
 })
 
 export const { changeUser, logoutUser } = users.actions
-
 export const selectedUser = state => state.user
-
 export default users.reducer
 
 export function createUser(name, email, password){
@@ -56,12 +54,14 @@ export function userLogin(email, password){
         })
     }
 }
-export function userLogout(){
-    const auth = getAuth();
-    signOut(auth)
-    logoutUser()
-}
 
+export function userLogout(){
+    return function (dispatch){
+        const auth = getAuth();
+        signOut(auth)
+        dispatch(logoutUser())
+    }
+}
 
 export function userInfo(){
    return function (dispatch){

@@ -1,89 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import './style.css'
 
-import { setDispesa } from '../../redux/financas/despesaSlice'
-import { UseDespesas } from '../../redux/financas/despesaSlice'
-import { useSelector } from 'react-redux'
-
-import fireStore from '../../services/firebaseconnect'
-import { doc, getDocs, query, collection, where, deleteDoc } from 'firebase/firestore'
+import { useSelector, useDispatch } from 'react-redux'
+import { UseDespesas, getDespesas, filtrarDespesa, deleteDespesa } from '../../redux/financas/despesaSlice'
 
 import Navbar from '../../components/Navbar';
 import { FaSearch, FaTimes } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
 
 export default function Consulta() {
-  const [resquest, setResquest] = useState(false);
-
   const [ano, setAno] = useState('');
   const [mes, setMes] = useState('');
   const [dia, setDia] = useState('');
   const [tipo, setTipo] = useState('');
   const [valor, setValor] = useState('');
   const [descricao, setDescricao] = useState('');
-  
+
   const dispatch = useDispatch();
-  const { despesa } = useSelector(UseDespesas);
+  const { despesa, request } = useSelector(UseDespesas);
 
   useEffect(()=>{
-    async function despesas(){
-      await getDocs(collection(fireStore, 'despesas'))
-      .then((snapshot)=>{
-        let lista = []
-        snapshot.forEach((doc)=>{
-          lista.push({
-            id: doc.id,
-            ano: doc.data().ano,
-            mes: doc.data().mes,
-            dia: doc.data().dia,
-            tipo: doc.data().tipo,
-            descricao: doc.data().descricao,
-            valor: doc.data().valor
-          })
-        })
-        dispatch(setDispesa(lista))
-        setResquest(true)
-      })
-      
-    }
-    despesas()
+    dispatch(getDespesas())
   },[dispatch])
 
-  async function handleRequest(e){
-    e.preventDefault();
-    let param
-    let searc
-    let arg
-
+  function handleRequest(e){
+    e.preventDefault()
+    let param, searc, arg
     arg = (dia !== '' ? (param = 'dia', searc = dia) : '')
     arg = (mes !== '' ? (param = 'mes', searc = mes) : '')
     arg = (ano !== '' ? (param = 'ano', searc = ano) : '')
     arg = (tipo !== '' ? (param = 'tipo', searc = tipo) : '')
     arg = (valor !== '' ? (param = 'valor', searc = valor) : '')
     arg = (descricao !== '' ? (param = 'descricao', searc = descricao) : '')
-
-    if(searc){
-      const q = query(collection(fireStore, 'despesas'), where(`${param}`, '==', `${searc}`))
-      const financa = await getDocs(q)
-      let lista = []
-      financa.forEach((doc) => {
-        lista.push ({
-          id: doc.id,
-          ano: doc.data().ano,
-          mes: doc.data().mes,
-          dia: doc.data().dia,
-          tipo: doc.data().tipo,
-          descricao: doc.data().descricao,
-          valor: doc.data().valor
-        })
-      })
-      dispatch(setDispesa([...lista]))
-      setResquest(true)
-    }  
+    dispatch(filtrarDespesa(param, searc))
   }
 
-  async function handleRemove(id){
-    await deleteDoc(doc(fireStore, 'despesas', `${id}`))
+  function handleRemove(id){
+    dispatch(deleteDespesa(id))
   }
 
   return (
@@ -145,7 +97,6 @@ export default function Consulta() {
           onChange={(e)=>setDescricao(e.target.value)}/>
         </div>
 
-
         <div>
           <input 
           type='text'
@@ -160,7 +111,7 @@ export default function Consulta() {
       </form>
 
       <div className='consulta'>
-        {resquest ? (
+        {request ? (
           <table>
             <thead>
               <tr>
