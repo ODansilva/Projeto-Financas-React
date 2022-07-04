@@ -1,10 +1,10 @@
 <div align="center">
-<span>Este é um projeto prático utilizando Reactjs Firebase e Redux</span>
+<span>Este é um projeto prático utilizando Reactjs, Firebase e Redux</span>
 <span>você pode visualizar o aplicativo no Netlify através do link:
   <a href="https://financas-react-danielsilva.netlify.app/">https://financas-react-danielsilva.netlify.app/</a>
 </span>
   <br/><br/>
-<span>This is a practical project using Reactjs Firebase and Redux </span>
+<span>This is a practical project using Reactjs, Firebase and Redux </span>
 <span>you can view the application on Netlify through the link:
   <a href="https://financas-react-danielsilva.netlify.app/">https://financas-react-danielsilva.netlify.app/</a>
 </span>
